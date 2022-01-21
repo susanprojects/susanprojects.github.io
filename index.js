@@ -3,14 +3,9 @@ const selectCameraButton = document.getElementById("btn-select");
 const cameraDevice = document.getElementById("available-cameras");
 
 let currentStream;
-let supports = navigator.mediaDevices.getSupportedConstraints();
 
 let cameraDeviceIds = [];
-let currenctCameraId;
-
-// if (supports["facingMode"] === true) {
-//   selectCameraButton.disabled = false;
-// }
+let currenctCameraId = 0;
 
 function pauseMediaTrack(stream) {
   stream.getTracks().forEach((currentMediaTrack) => {
@@ -20,12 +15,10 @@ function pauseMediaTrack(stream) {
 
 function fetchDevices(mediaDevices) {
   let count = 1;
-  mediaDevices.forEach((mediaDevice, index) => {
+  mediaDevices.forEach((mediaDevice) => {
     if (mediaDevice.kind === "videoinput") {
       cameraDeviceIds.push(mediaDevice.deviceId);
-      if (index === 0) {
-        currenctCameraId = 0;
-      }
+
       const div = document.createElement("div");
       const node = document.createTextNode(
         mediaDevice.label || `Camera ${count++}`
@@ -34,6 +27,10 @@ function fetchDevices(mediaDevices) {
       cameraDevice.appendChild(div);
     }
   });
+
+  if (cameraDeviceIds.length === 0) {
+    alert("No devices found");
+  }
 }
 
 selectCameraButton.addEventListener("click", () => {
@@ -42,12 +39,13 @@ selectCameraButton.addEventListener("click", () => {
   }
 
   const videoConstraints = {};
-  // if (cameraDevice.value === "") {
-  //   videoConstraints.facingMode = "environment";
-  // } else {
-  videoConstraints.deviceId = cameraDevice.value;
-  // }
-  console.log(videoConstraints);
+
+  let nextCameraId = (currenctCameraId + 1) % cameraDeviceIds.length;
+  if (!cameraDeviceIds[nextCameraId]) {
+    nextCameraId = 0;
+  }
+  videoConstraints.deviceId = cameraDeviceIds[nextCameraId].deviceId;
+
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     const constraints = {
       audio: false,
@@ -60,17 +58,13 @@ selectCameraButton.addEventListener("click", () => {
 const startVideoStreaming = async (constraints) => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    console.log(stream);
     video.srcObject = stream;
     video.play();
   } catch (error) {
     console.log(error);
+    video.pause();
+    video.srcObject = null;
   }
 };
 
-(async () => {
-  const t = await navigator.mediaDevices.enumerateDevices();
-  alert(JSON.stringify(t));
-  alert(JSON.stringify(supports));
-})();
 navigator.mediaDevices.enumerateDevices().then(fetchDevices);
