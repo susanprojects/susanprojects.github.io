@@ -26,10 +26,28 @@ h1 {
 
 #btn-select {
     font-weight: bold;
-    background-color: chocolate;
+    border-radius: 12px;
+    font-size: 16px;
+    box-shadow: grey 2px 2px 2px;
+    cursor: pointer;
+}
+
+#available-cameras {
+    position: fixed;
+    padding: 5px;
 }
 
 video {
     width: 100vw;
     height: 100vh;
+}
+
+@media only screen and (max-width: 600px) {
+    h1 {
+        font-size: 20px;
+    }
+
+    #btn-select {
+        font-size: 10px;
+    }
 }

@@ -1,9 +1,8 @@
-const video = document.querySelector("#video");
+const video = document.getElementById("video");
 const selectCameraButton = document.getElementById("btn-select");
 const cameraDevice = document.getElementById("available-cameras");
 
 let currentStream;
-
 let cameraDeviceIds = [];
 let currenctCameraId = 0;
 
@@ -13,25 +12,28 @@ function pauseMediaTrack(stream) {
   });
 }
 
-function fetchDevices(mediaDevices) {
+const fetchCameraDevices = async () => {
+  const mediaDevices = await navigator.mediaDevices.enumerateDevices();
   let count = 1;
-  mediaDevices.forEach((mediaDevice) => {
-    if (mediaDevice.kind === "videoinput") {
-      cameraDeviceIds.push(mediaDevice.deviceId);
+  const videoDevices = mediaDevices.filter(
+    (device) => device.kind === "videoinput"
+  );
 
-      const div = document.createElement("div");
-      const node = document.createTextNode(
-        mediaDevice.label || `Camera ${count++}`
-      );
-      div.appendChild(node);
-      cameraDevice.appendChild(div);
-    }
+  videoDevices.map((videoDevice) => {
+    cameraDeviceIds.push(videoDevice.deviceId);
+
+    const div = document.createElement("div");
+    const node = document.createTextNode(
+      videoDevice.label || `Camera ${count++}`
+    );
+    div.appendChild(node);
+    cameraDevice.appendChild(div);
   });
 
   if (cameraDeviceIds.length === 0) {
     alert("No devices found");
   }
-}
+};
 
 selectCameraButton.addEventListener("click", () => {
   if (typeof currentStream !== "undefined") {
@@ -67,4 +69,4 @@ const startVideoStreaming = async (constraints) => {
   }
 };
 
-navigator.mediaDevices.enumerateDevices().then(fetchDevices);
+fetchCameraDevices();
