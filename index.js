@@ -1,6 +1,7 @@
 const video = document.getElementById("video");
 const selectCameraButton = document.getElementById("btn-select");
 const cameraDevice = document.getElementById("available-cameras");
+const videoConstraints = {};
 
 let currentStream;
 let cameraDeviceIds = [];
@@ -33,28 +34,12 @@ const fetchCameraDevices = async () => {
   if (cameraDeviceIds.length === 0) {
     alert("No devices found");
   }
+
+  getVideoConstraints();
 };
 
 selectCameraButton.addEventListener("click", () => {
-  if (typeof currentStream !== "undefined") {
-    pauseMediaTrack(currentStream);
-  }
-
-  const videoConstraints = {};
-
-  let nextCameraId = (currenctCameraId + 1) % cameraDeviceIds.length;
-  if (!cameraDeviceIds[nextCameraId]) {
-    nextCameraId = 0;
-  }
-  videoConstraints.deviceId = cameraDeviceIds[nextCameraId].deviceId;
-
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    const constraints = {
-      audio: false,
-      video: videoConstraints,
-    };
-    startVideoStreaming(constraints);
-  }
+  getVideoConstraints();
 });
 
 const startVideoStreaming = async (constraints) => {
@@ -69,4 +54,23 @@ const startVideoStreaming = async (constraints) => {
   }
 };
 
-fetchCameraDevices();
+function getVideoConstraints() {
+  if (typeof currentStream !== "undefined") {
+    pauseMediaTrack(currentStream);
+  }
+
+  let nextCameraId = (currenctCameraId + 1) % cameraDeviceIds.length;
+  if (!cameraDeviceIds[nextCameraId]) {
+    nextCameraId = 0;
+  }
+
+  videoConstraints.deviceId = cameraDeviceIds[nextCameraId].deviceId;
+
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    const constraints = {
+      audio: false,
+      video: videoConstraints,
+    };
+    startVideoStreaming(constraints);
+  }
+}
