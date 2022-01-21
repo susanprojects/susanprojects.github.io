@@ -1,13 +1,13 @@
 body {
     padding: 0;
     margin: 0;
+    overflow: hidden;
 }
 
 header {
     display: flex;
     height: 50px;
     width: auto;
-    overflow: hidden;
     justify-content: space-between;
     padding: 0 10px 0 10px;
     box-shadow: grey 2px 1px 15px;
@@ -37,3 +37,7 @@ h1 {
     background-color: chocolate;
 }
 
+video {
+    width: 100vw;
+    height: 100vh;
+}

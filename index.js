@@ -5,9 +5,12 @@ const cameraDevice = document.getElementById("available-cameras");
 let currentStream;
 let supports = navigator.mediaDevices.getSupportedConstraints();
 
-if (supports["facingMode"] === true) {
-  selectCameraButton.disabled = false;
-}
+let cameraDeviceIds = [];
+let currenctCameraId;
+
+// if (supports["facingMode"] === true) {
+//   selectCameraButton.disabled = false;
+// }
 
 function pauseMediaTrack(stream) {
   stream.getTracks().forEach((currentMediaTrack) => {
@@ -17,8 +20,12 @@ function pauseMediaTrack(stream) {
 
 function fetchDevices(mediaDevices) {
   let count = 1;
-  mediaDevices.forEach((mediaDevice) => {
+  mediaDevices.forEach((mediaDevice, index) => {
     if (mediaDevice.kind === "videoinput") {
+      cameraDeviceIds.push(mediaDevice.deviceId);
+      if (index === 0) {
+        currenctCameraId = 0;
+      }
       const div = document.createElement("div");
       const node = document.createTextNode(
         mediaDevice.label || `Camera ${count++}`
@@ -35,12 +42,12 @@ selectCameraButton.addEventListener("click", () => {
   }
 
   const videoConstraints = {};
-  if (cameraDevice.value === "") {
-    videoConstraints.facingMode = "environment";
-  } else {
-    videoConstraints.deviceId = cameraDevice.value;
-  }
-
+  // if (cameraDevice.value === "") {
+  //   videoConstraints.facingMode = "environment";
+  // } else {
+  videoConstraints.deviceId = cameraDevice.value;
+  // }
+  console.log(videoConstraints);
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     const constraints = {
       audio: false,
@@ -53,6 +60,7 @@ selectCameraButton.addEventListener("click", () => {
 const startVideoStreaming = async (constraints) => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    console.log(stream);
     video.srcObject = stream;
     video.play();
   } catch (error) {
@@ -60,4 +68,5 @@ const startVideoStreaming = async (constraints) => {
   }
 };
 
+alert(navigator.mediaDevices.enumerateDevices());
 navigator.mediaDevices.enumerateDevices().then(fetchDevices);
