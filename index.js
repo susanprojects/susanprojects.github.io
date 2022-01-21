@@ -68,5 +68,9 @@ const startVideoStreaming = async (constraints) => {
   }
 };
 
-alert(await navigator.mediaDevices.enumerateDevices());
+(async () => {
+  const t = await navigator.mediaDevices.enumerateDevices();
+  alert(JSON.stringify(t));
+  alert(JSON.stringify(supports));
+})();
 navigator.mediaDevices.enumerateDevices().then(fetchDevices);
