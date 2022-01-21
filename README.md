@@ -9,3 +9,8 @@
 
 3. There is a button to switch between all available cameras, if any.
 ```
+
+## To do improvements:
+
+1. Access back facing camera on mobile device
+2. Figure out how to use 'facing mode' for mobile device
